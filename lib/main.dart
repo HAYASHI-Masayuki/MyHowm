@@ -88,6 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       );
+    }).then((val) {
+      _title.clear();
+      _body.clear();
     });
   }
 
