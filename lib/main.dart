@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_howm/entries.dart';
 import 'package:my_howm/entry.dart';
 
 void main() {
@@ -50,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _title = TextEditingController();
   final _body  = TextEditingController();
 
-  final _entries = <Entry>[];
+  final _entries = Entries();
 
   void _createEntry(BuildContext context) {
     showDialog(context: context, builder: (_) {
@@ -77,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 _entries.insert(0, Entry(_title.text, _body.text, DateTime.now()));
               });
+              _entries.save();
               Navigator.pop(context);
             },
             child: Text('追加')
