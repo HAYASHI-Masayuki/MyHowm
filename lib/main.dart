@@ -50,8 +50,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _title = TextEditingController();
   final _body  = TextEditingController();
-
   final _entries = Entries();
+
+  _MyHomePageState() {
+    _entries.load();
+  }
 
   void _createEntry(BuildContext context) {
     showDialog(context: context, builder: (_) {
@@ -77,8 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               setState(() {
                 _entries.insert(0, Entry(_title.text, _body.text, DateTime.now()));
+                _entries.save();
               });
-              _entries.save();
               Navigator.pop(context);
             },
             child: Text('追加')
