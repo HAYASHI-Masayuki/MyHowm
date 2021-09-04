@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_howm/entry.dart';
 
 void main() {
   runApp(MyApp());
@@ -46,19 +47,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _entry = '';
+  final _title = TextEditingController();
+  final _body  = TextEditingController();
 
-  void _createEntry() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _entry = '''
-      = 
-      [2021-08-26 11:30:00]
-      ''';
+  final _entries = <Entry>[];
+
+  void _createEntry(BuildContext context) {
+    showDialog(context: context, builder: (_) {
+      return AlertDialog(
+        title: const Text('新規メモ'),
+        content: Column(children: [
+          TextField(
+            autofocus: true,
+            controller: _title,
+          ),
+          TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            controller: _body,
+          )
+        ]),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('キャンセル')
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _entries.insert(0, Entry(_title.text, _body.text, DateTime.now()));
+              });
+              Navigator.pop(context);
+            },
+            child: Text('追加')
+          ),
+        ],
+      );
     });
   }
 
@@ -83,19 +107,21 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text('ここにタイトルが入ります'),
-                  Text("本文\n本文\n"),
-                  Text('[2021-09-04 11:04:00]')
+                  Text(_entries[index].getTitle()),
+                  Text(_entries[index].getBody()),
+                  Text(_entries[index].getCreatedAtFormatted()),
                 ],
                 crossAxisAlignment: CrossAxisAlignment.start,
               )
             )
           );
         },
-        itemCount: 2,
+        itemCount: _entries.length,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _createEntry,
+        onPressed: () {
+          _createEntry(context);
+        },
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
