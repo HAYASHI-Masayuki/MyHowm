@@ -78,6 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           TextButton(
             onPressed: () {
+              if (_title.text == '') {
+                return;
+              }
+
               setState(() {
                 _entries.insert(0, Entry(_title.text, _body.text, DateTime.now()));
                 _entries.save();
