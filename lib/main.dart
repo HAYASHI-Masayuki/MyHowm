@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_howm/entries.dart';
 import 'package:my_howm/entry.dart';
 
@@ -10,6 +11,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const locale = Locale('ja', 'JP');
+
     return MaterialApp(
       title: 'MyHowm',
       theme: ThemeData(
@@ -23,8 +26,18 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.green,
+
       ),
       home: MyHomePage(title: 'MyHowm'),
+      // https://qiita.com/najeira/items/dbf5663d1ed845fb1f51
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        locale,
+      ],
     );
   }
 }
