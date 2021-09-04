@@ -63,11 +63,13 @@ class _MyHomePageState extends State<MyHomePage> {
         content: Column(children: [
           TextField(
             autofocus: true,
+            decoration: InputDecoration(labelText: 'タイトル'),
             controller: _title,
           ),
           TextField(
             keyboardType: TextInputType.multiline,
             maxLines: null,
+            decoration: InputDecoration(labelText: '本文'),
             controller: _body,
           )
         ]),
