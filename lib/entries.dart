@@ -1,8 +1,10 @@
 import 'dart:collection';
 import 'dart:io';
+import 'package:ext_storage/ext_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:my_howm/entry.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Entries extends ListBase {
   final _entries = <Entry>[];
@@ -36,8 +38,17 @@ class Entries extends ListBase {
 
     await Directory(_howmDir).create(recursive: true);
 
-    final lines = File('$_howmDir/test.howm').readAsLinesSync();
+    //File('$_howmDir/test.howm').deleteSync();
+
+    var lines = <String>[];
+
+    if (File('$_howmDir/test.howm').existsSync()) {
+      print('file exists');
+      lines = File('$_howmDir/test.howm').readAsLinesSync();
+    }
+
 print(lines);
+
     var _title = '';
     var _body  = '';
     DateTime? _createdAt = null;
@@ -83,6 +94,19 @@ print(lines);
     });
     
     await File('$_howmDir/test.howm').writeAsString(contents);
+
+    if (! await Permission.manageExternalStorage.request().isGranted) {
+      return;
+    }
+
+    var _backupDir = (await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOCUMENTS))!
+      + '/howm';
+
+    Directory(_backupDir).create(recursive: true);
+
+    var ymd = DateFormat('yyyy-MM-DD-hh-mm-ss').format(DateTime.now());
+
+    File('$_howmDir/test.howm').copySync('$_backupDir/$ymd.howm');
 
     print('saved!');
   }
