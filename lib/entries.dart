@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:my_howm/entry.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Entries extends ListBase {
   final _entries = <Entry>[];
+
+  String? _dirpath;
+  String? _filepath;
 
   @override
   get length => _entries.length;
@@ -29,25 +31,27 @@ class Entries extends ListBase {
   void add(value) => _entries.add(value);
 
   load() async {
-    final _datePattern = RegExp(r'^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]'); // \z?
+    final _createdAtPattern = RegExp(r'^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]'); // \z?
 
-    final _docDir = (await getApplicationDocumentsDirectory()).path;
-    final _howmDir = '$_docDir/howm';
+    final _docDir = (await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOCUMENTS))!;
+    final _dirFormat = "yyyy/MM";
+
+    _dirpath = '$_docDir/howm/' + DateFormat(_dirFormat).format(DateTime.now());
+
+    final _fileFormat = "yyyy-MM-dd'.howm'";
+    final _howmFile = DateFormat(_fileFormat).format(DateTime.now());
+
+    _filepath = '$_dirpath/$_howmFile';
 
     _entries.clear();
 
-    await Directory(_howmDir).create(recursive: true);
+    await Directory(_dirpath!).create(recursive: true);
 
-    //File('$_howmDir/test.howm').deleteSync();
-
-    var lines = <String>[];
-
-    if (File('$_howmDir/test.howm').existsSync()) {
-      print('file exists');
-      lines = File('$_howmDir/test.howm').readAsLinesSync();
+    if (! File(_filepath!).existsSync()) {
+      return;
     }
 
-print(lines);
+    var lines = File(_filepath!).readAsLinesSync();
 
     var _title = '';
     var _body  = '';
@@ -62,8 +66,8 @@ print(lines);
         _title = line.replaceFirst('= ', '');
         _body  = '';
         _createdAt = null;
-      } else if (_datePattern.hasMatch(line)) {
-        final match = _datePattern.firstMatch(line);
+      } else if (_createdAtPattern.hasMatch(line)) {
+        final match = _createdAtPattern.firstMatch(line);
 
         _createdAt = DateFormat('yyyy-MM-dd HH:mm:ss').parse(match!.group(1)!);
       } else {
@@ -77,10 +81,7 @@ print(lines);
   }
 
   save() async {
-    final _docDir = (await getApplicationDocumentsDirectory()).path;
-    final _howmDir = '$_docDir/howm';
-
-    await Directory(_howmDir).create(recursive: true);
+    await Directory(_dirpath!).create(recursive: true);
 
     var contents = '';
 
@@ -92,22 +93,12 @@ print(lines);
           + entry.getCreatedAtFormatted()
           + "\n\n";
     });
-    
-    await File('$_howmDir/test.howm').writeAsString(contents);
 
     if (! await Permission.manageExternalStorage.request().isGranted) {
+      // TODO: エラー出さないと
       return;
     }
 
-    var _backupDir = (await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOCUMENTS))!
-      + '/howm';
-
-    Directory(_backupDir).create(recursive: true);
-
-    var ymd = DateFormat('yyyy-MM-DD-hh-mm-ss').format(DateTime.now());
-
-    File('$_howmDir/test.howm').copySync('$_backupDir/$ymd.howm');
-
-    print('saved!');
+    await File(_filepath!).writeAsString(contents);
   }
 }
