@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.green,
-
       ),
       home: MyHomePage(title: 'MyHowm'),
       // https://qiita.com/najeira/items/dbf5663d1ed845fb1f51
@@ -62,7 +61,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _title = TextEditingController();
-  final _body  = TextEditingController();
+  final _body = TextEditingController();
   final _entries = Entries();
 
   _MyHomePageState() {
@@ -74,44 +73,45 @@ class _MyHomePageState extends State<MyHomePage> {
       _entries.toString();
     });
 
-    showDialog(context: context, builder: (_) {
-      return AlertDialog(
-        title: const Text('新規メモ'),
-        content: Column(children: [
-          TextField(
-            autofocus: true,
-            decoration: InputDecoration(labelText: 'タイトル'),
-            controller: _title,
-          ),
-          TextField(
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            decoration: InputDecoration(labelText: '本文'),
-            controller: _body,
-          )
-        ]),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('キャンセル')
-          ),
-          TextButton(
-            onPressed: () {
-              if (_title.text == '') {
-                return;
-              }
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('新規メモ'),
+            content: Column(children: [
+              TextField(
+                autofocus: true,
+                decoration: InputDecoration(labelText: 'タイトル'),
+                controller: _title,
+              ),
+              TextField(
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: InputDecoration(labelText: '本文'),
+                controller: _body,
+              )
+            ]),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('キャンセル')),
+              TextButton(
+                  onPressed: () {
+                    if (_title.text == '') {
+                      return;
+                    }
 
-              setState(() {
-                _entries.insert(0, Entry(_title.text, _body.text, DateTime.now()));
-                _entries.save();
-              });
-              Navigator.pop(context);
-            },
-            child: Text('追加')
-          ),
-        ],
-      );
-    }).then((val) {
+                    setState(() {
+                      _entries.insert(
+                          0, Entry(_title.text, _body.text, DateTime.now()));
+                      _entries.save();
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Text('追加')),
+            ],
+          );
+        }).then((val) {
       _title.clear();
       _body.clear();
     });
@@ -131,24 +131,32 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Text(_entries[index].getTitle()),
-                  Text(_entries[index].getBody()),
-                  Text(_entries[index].getCreatedAtFormatted()),
-                ],
-                crossAxisAlignment: CrossAxisAlignment.start,
-              )
-            )
-          );
-        },
-        itemCount: _entries.length,
-      ),
+      body: Column(children: [
+        Expanded(
+          child: ListView.builder(
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                  child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text(_entries[index].getTitle()),
+                          Text(_entries[index].getBody()),
+                          Text(_entries[index].getCreatedAtFormatted()),
+                        ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                      )));
+            },
+            itemCount: _entries.length,
+          ),
+        ),
+        DropdownButton(items: [
+          DropdownMenuItem<String>(
+              value: 'yesterday_today', child: Text('今日・昨日')),
+        ], onChanged: (String? newValue) {
+          // TODO
+        },)
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _createEntry(context);
