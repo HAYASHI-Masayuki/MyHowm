@@ -45,6 +45,11 @@ class Entries extends ListBase {
 
     _entries.clear();
 
+    if (! await Permission.manageExternalStorage.request().isGranted) {
+      // TODO: エラー出さないと
+      return;
+    }
+
     await Directory(_dirpath!).create(recursive: true);
 
     if (! File(_filepath!).existsSync()) {
