@@ -70,6 +70,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _createEntry(BuildContext context) {
+    setState(() {
+      _entries.toString();
+    });
+
     showDialog(context: context, builder: (_) {
       return AlertDialog(
         title: const Text('新規メモ'),
