@@ -171,13 +171,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
             if (_selected == 'yesterday_today') {
               final entries = Entries();
-              entries.load(DateTime.now().subtract(const Duration(days: 1)));
+              //entries.load(DateTime.now().subtract(const Duration(days: 1)));
 
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => View(entries: entries)));
             }
+
+            setState(() {
+              _selected = '';
+            });
           },
         )
       ]),

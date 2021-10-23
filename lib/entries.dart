@@ -30,7 +30,7 @@ class Entries extends ListBase {
   @override
   void add(value) => _entries.add(value);
 
-  load(DateTime dateTime) async {
+  Future<Entries> load(DateTime dateTime) async {
     final _createdAtPattern = RegExp(r'^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]'); // \z?
 
     final _docDir = (await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOCUMENTS))!;
@@ -47,14 +47,16 @@ class Entries extends ListBase {
 
     if (! await Permission.manageExternalStorage.request().isGranted) {
       // TODO: エラー出さないと
-      return;
+      return this;
     }
 
     await Directory(_dirpath!).create(recursive: true);
 
     if (! File(_filepath!).existsSync()) {
-      return;
+      return this;
     }
+
+    print('Open: ' + _filepath!);
 
     var lines = File(_filepath!).readAsLinesSync();
 
@@ -83,6 +85,8 @@ class Entries extends ListBase {
     if (_title != '') {
       _entries.add(Entry(_title, _body, _createdAt));
     }
+
+    return this;
   }
 
   save() async {
