@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_howm/entries.dart';
 import 'package:my_howm/entry.dart';
+import 'package:my_howm/view.dart';
 
 void main() {
   runApp(MyApp());
@@ -67,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var _selected = '';
 
   _MyHomePageState() {
-    _entries.load();
+    _entries.load(DateTime.now());
   }
 
   void _createEntry(BuildContext context) {
@@ -154,8 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         DropdownButton(
           items: [
-            DropdownMenuItem<String>(
-                value: '', child: Text('')),
+            DropdownMenuItem<String>(value: '', child: Text('')),
             DropdownMenuItem<String>(
                 value: 'yesterday_today', child: Text('今日・昨日')),
           ],
@@ -168,6 +168,16 @@ class _MyHomePageState extends State<MyHomePage> {
             setState(() {
               _selected = newValue;
             });
+
+            if (_selected == 'yesterday_today') {
+              final entries = Entries();
+              entries.load(DateTime.now().subtract(const Duration(days: 1)));
+
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => View(entries: entries)));
+            }
           },
         )
       ]),

@@ -30,16 +30,16 @@ class Entries extends ListBase {
   @override
   void add(value) => _entries.add(value);
 
-  load() async {
+  load(DateTime dateTime) async {
     final _createdAtPattern = RegExp(r'^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]'); // \z?
 
     final _docDir = (await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOCUMENTS))!;
     final _dirFormat = "yyyy/MM";
 
-    _dirpath = '$_docDir/howm/' + DateFormat(_dirFormat).format(DateTime.now());
+    _dirpath = '$_docDir/howm/' + DateFormat(_dirFormat).format(dateTime);
 
     final _fileFormat = "yyyy-MM-dd'.howm'";
-    final _howmFile = DateFormat(_fileFormat).format(DateTime.now());
+    final _howmFile = DateFormat(_fileFormat).format(dateTime);
 
     _filepath = '$_dirpath/$_howmFile';
 
@@ -60,7 +60,7 @@ class Entries extends ListBase {
 
     var _title = '';
     var _body  = '';
-    DateTime? _createdAt = null;
+    DateTime? _createdAt;
 
     for (final line in lines) {
       if (line.startsWith('= ')) {
