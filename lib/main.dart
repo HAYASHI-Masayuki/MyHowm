@@ -64,6 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final _body = TextEditingController();
   final _entries = Entries();
 
+  var _selected = '';
+
   _MyHomePageState() {
     _entries.load();
   }
@@ -150,12 +152,24 @@ class _MyHomePageState extends State<MyHomePage> {
             itemCount: _entries.length,
           ),
         ),
-        DropdownButton(items: [
-          DropdownMenuItem<String>(
-              value: 'yesterday_today', child: Text('今日・昨日')),
-        ], onChanged: (String? newValue) {
-          // TODO
-        },)
+        DropdownButton(
+          items: [
+            DropdownMenuItem<String>(
+                value: '', child: Text('')),
+            DropdownMenuItem<String>(
+                value: 'yesterday_today', child: Text('今日・昨日')),
+          ],
+          value: _selected,
+          onChanged: (String? newValue) {
+            if (newValue == null) {
+              return;
+            }
+
+            setState(() {
+              _selected = newValue;
+            });
+          },
+        )
       ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
