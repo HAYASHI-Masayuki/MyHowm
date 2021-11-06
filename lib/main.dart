@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
           textInputAction: TextInputAction.none,
         ),
         onKey: (data, event) {
-          if (event.logicalKey == LogicalKeyboardKey.enter) {
+          if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
             bodyFocusNode.requestFocus();
 
             return true;
