@@ -86,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 autofocus: true,
                 decoration: InputDecoration(labelText: 'タイトル'),
                 controller: _title,
+                textInputAction: TextInputAction.next,
               ),
               TextField(
                 keyboardType: TextInputType.multiline,
