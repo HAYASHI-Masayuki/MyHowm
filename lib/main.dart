@@ -68,6 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var _selected = '';
 
+  var _shouldFocusMoveToTitle = true;
+
   _MyHomePageState() {
     _entries.load(DateTime.now());
   }
@@ -77,10 +79,12 @@ class _MyHomePageState extends State<MyHomePage> {
       _entries.toString();
     });
 
+    var titleFocusNode = FocusNode();
     var bodyFocusNode = FocusNode();
 
     var titleField = FocusScope(
         child: TextField(
+          focusNode: titleFocusNode,
           autofocus: true,
           decoration: InputDecoration(labelText: 'タイトル'),
           controller: _title,
@@ -96,16 +100,31 @@ class _MyHomePageState extends State<MyHomePage> {
           return false;
         });
 
-    var bodyField = RawKeyboardListener(
-        focusNode: FocusNode(),
+    var bodyField = FocusScope(
         child: TextField(
           focusNode: bodyFocusNode,
           keyboardType: TextInputType.multiline,
           maxLines: null,
           decoration: InputDecoration(labelText: '本文'),
           controller: _body,
+          onChanged: (value) {
+            if (_body.text != '') {
+              _shouldFocusMoveToTitle = false;
+            }
+          },
         ),
-        onKey: (event) {
+        onKey: (data, event) {
+          if (event.isKeyPressed(LogicalKeyboardKey.backspace) && _body.text == '') {
+            if (! _shouldFocusMoveToTitle && _body.text == '') {
+              _shouldFocusMoveToTitle = true;
+            } else {
+              titleFocusNode.requestFocus();
+
+              return true;
+            }
+          }
+
+          return false;
         });
 
     showDialog(
