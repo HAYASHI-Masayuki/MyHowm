@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_howm/entries.dart';
 import 'package:my_howm/entry.dart';
@@ -76,24 +77,42 @@ class _MyHomePageState extends State<MyHomePage> {
       _entries.toString();
     });
 
+    var bodyFocusNode = FocusNode();
+
+    var titleField = RawKeyboardListener(
+        focusNode: FocusNode(),
+        child: TextField(
+          autofocus: true,
+          decoration: InputDecoration(labelText: 'タイトル'),
+          controller: _title,
+          textInputAction: TextInputAction.none,
+        ),
+        onKey: (event) {
+          if (event.logicalKey == LogicalKeyboardKey.enter) {
+            bodyFocusNode.requestFocus();
+          }
+        });
+
+    var bodyField = RawKeyboardListener(
+        focusNode: FocusNode(),
+        child: TextField(
+          focusNode: bodyFocusNode,
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+          decoration: InputDecoration(labelText: '本文'),
+          controller: _body,
+        ),
+        onKey: (event) {
+        });
+
     showDialog(
         context: context,
         builder: (_) {
           return AlertDialog(
             title: const Text('新規メモ'),
             content: Column(children: [
-              TextField(
-                autofocus: true,
-                decoration: InputDecoration(labelText: 'タイトル'),
-                controller: _title,
-                textInputAction: TextInputAction.next,
-              ),
-              TextField(
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                decoration: InputDecoration(labelText: '本文'),
-                controller: _body,
-              )
+              titleField,
+              bodyField,
             ]),
             actions: [
               TextButton(
