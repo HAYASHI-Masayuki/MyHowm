@@ -79,18 +79,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var bodyFocusNode = FocusNode();
 
-    var titleField = RawKeyboardListener(
-        focusNode: FocusNode(),
+    var titleField = FocusScope(
         child: TextField(
           autofocus: true,
           decoration: InputDecoration(labelText: 'タイトル'),
           controller: _title,
           textInputAction: TextInputAction.none,
         ),
-        onKey: (event) {
+        onKey: (data, event) {
           if (event.logicalKey == LogicalKeyboardKey.enter) {
             bodyFocusNode.requestFocus();
+
+            return true;
           }
+
+          return false;
         });
 
     var bodyField = RawKeyboardListener(
