@@ -114,8 +114,9 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         onKey: (data, event) {
-          if (event.isKeyPressed(LogicalKeyboardKey.backspace) && _body.text == '') {
-            if (! _shouldFocusMoveToTitle && _body.text == '') {
+          if (event.isKeyPressed(LogicalKeyboardKey.backspace) &&
+              _body.text == '') {
+            if (!_shouldFocusMoveToTitle && _body.text == '') {
               _shouldFocusMoveToTitle = true;
             } else {
               titleFocusNode.requestFocus();
@@ -130,32 +131,36 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(
         context: context,
         builder: (_) {
-          return AlertDialog(
-            title: const Text('新規メモ'),
-            content: Column(children: [
-              titleField,
-              bodyField,
-            ]),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('キャンセル')),
-              TextButton(
-                  onPressed: () {
-                    if (_title.text == '') {
-                      return;
-                    }
+          return WillPopScope(
+              child: AlertDialog(
+                title: const Text('新規メモ'),
+                content: Column(children: [
+                  titleField,
+                  bodyField,
+                ]),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('キャンセル')),
+                  TextButton(
+                      onPressed: () {
+                        if (_title.text == '') {
+                          return;
+                        }
 
-                    setState(() {
-                      _entries.insert(
-                          0, Entry(_title.text, _body.text, DateTime.now()));
-                      _entries.save();
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: Text('追加')),
-            ],
-          );
+                        setState(() {
+                          _entries.insert(0,
+                              Entry(_title.text, _body.text, DateTime.now()));
+                          _entries.save();
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Text('追加')),
+                ],
+              ),
+              onWillPop: () async {
+                return _title.text == '';
+              });
         }).then((val) {
       _title.clear();
       _body.clear();
